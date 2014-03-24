@@ -3,36 +3,33 @@ describe("MarsRover Kata Tests", function() {
   var move = function (startingCoordinates, command) {
 		return marsRover.move(startingCoordinates, command);
   };
-
-  var variables = function (xAxis, yAxis, direction) {
-		return [xAxis, yAxis, direction.toLowerCase()];
-  };
+  
 
   it("moves rover facing north one coordinate forward", function(){
-		var startingPosition = variables(0, 0, 'N');
+		var startingPosition = [0, 0, 'N'];
 		command = ['f'];
 		
 		expect(move(startingPosition, command)).toEqual([0,1,'N']);
   });
 
   it("moves rover facing north to face East", function(){
-		var startingPosition = variables(0, 0, 'N');
+		var startingPosition = [0, 0, 'N'];
 		command = ['r'];
 		
 		expect(move(startingPosition, command)).toEqual([0,0,'E']);
   });
 
-  it("moves rover facing north to face West", function(){
-		var startingPosition = variables(0, 0, 'N');
-		command = ['l'];
+  it("moves rover facing north to face East", function(){
+		var startingPosition = [0, 0, 'N'];
+		command = ['r', 'f'];
 		
-		expect(move(startingPosition, command)).toEqual([0,0,'W']);
+		expect(move(startingPosition, command)).toEqual([1,0,'E']);
   });
 
-  it("turns rover left and moves forward one", function(){
-		var startingPosition = variables(0, 0, 'N');
-		command = ['l', 'f'];
+  it("turns rover right twice and moves forward twice and backwards once", function(){
+		var startingPosition = [5, 6, 'E'];
+		command = ['r', 'r', 'f', 'f', 'b'];
 		
-		expect(move(startingPosition, command)).toEqual([-1,0,'W']);
+		expect(move(startingPosition, command)).toEqual([4,6,'W']);
   });
 });

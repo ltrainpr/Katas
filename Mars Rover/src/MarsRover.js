@@ -1,5 +1,4 @@
 var marsRover = {
-
 	move: function (startingCoordinates, command) {
 		var x, y, newDirection;
 		function xyCoordinates (startingCoordinates) {
@@ -28,7 +27,27 @@ var marsRover = {
 						xyCoordinates(startingCoordinates);
 						break;
 					case 'w':
-
+						marsRover.west(startingCoordinates, command[i]);
+						xyCoordinates(startingCoordinates);
+						break;
+					default:
+						alert('Move: Not supposed to happen');
+				}
+			}else if (command[i] == 'b'){
+				switch(startingCoordinates[2].toLowerCase()){
+					case 'n':
+						marsRover.north(startingCoordinates, command[i]);
+						xyCoordinates(startingCoordinates);
+						break;
+					case 'e':
+						marsRover.east(startingCoordinates, command[i]);
+						xyCoordinates(startingCoordinates);
+						break;
+					case 's':
+						marsRover.south(startingCoordinates, command[i]);
+						xyCoordinates(startingCoordinates);
+						break;
+					case 'w':
 						marsRover.west(startingCoordinates, command[i]);
 						xyCoordinates(startingCoordinates);
 						break;
@@ -37,6 +56,7 @@ var marsRover = {
 				}
 			}
 		}
+		console.log(x,y,startingCoordinates[2].toUpperCase());
 		return [x,y,startingCoordinates[2].toUpperCase()];
 	},
 
