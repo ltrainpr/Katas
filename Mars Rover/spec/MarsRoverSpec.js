@@ -1,36 +1,33 @@
 describe("MarsRover Kata Tests", function() {
-  var command, grid, startingPosition;
-  var obstacle = [];
+  var command, grid, startingPosition, obstacle;
   var move = function (startingCoordinates, command, grid, obstacle) {
 		return marsRover.move(startingCoordinates, command, grid, obstacle);
   };
-
-  it("moves rover facing north one coordinate forward", function(){
+  beforeEach(function(){
+		obstacle = [];
 		grid = [30, 30];
 		startingPosition = [0, 0, 'N'];
+	});
+
+  it("moves rover facing north one coordinate forward", function(){
 		command = ['f'];
 		
 		expect(move(startingPosition, command, grid, obstacle)).toEqual([0,1,'N']);
   });
 
   it("moves rover facing north to face East", function(){
-		grid = [30, 30];
-		startingPosition = [0, 0, 'N'];
 		command = ['r'];
 		
 		expect(move(startingPosition, command, grid, obstacle)).toEqual([0,0,'E']);
   });
 
   it("moves rover facing north to face East", function(){
-		grid = [30, 30];
-		startingPosition = [0, 0, 'N'];
 		command = ['r', 'f'];
 		
 		expect(move(startingPosition, command, grid, obstacle)).toEqual([1,0,'E']);
   });
 
   it("turns rover right twice and moves forward twice and backwards once", function(){
-		grid = [30, 30];
 		startingPosition = [5, 6, 'E'];
 		command = ['r', 'r', 'f', 'f', 'b'];
 		
@@ -38,7 +35,6 @@ describe("MarsRover Kata Tests", function() {
   });
 
   it("wrapping of X axis grid", function(){
-		grid = [30, 30];
 		startingPosition = [29, 0, 'E'];
 		command = ['f'];
 
@@ -46,7 +42,6 @@ describe("MarsRover Kata Tests", function() {
   });
 
   it("wrapping of Y axis grid", function(){
-		grid = [30, 30];
 		startingPosition = [5, 29, 'N'];
 		command = ['f'];
 
@@ -54,7 +49,6 @@ describe("MarsRover Kata Tests", function() {
   });
 
   it("rover encounters obstacle and moves up to the last possible point", function(){
-		grid = [30, 30];
 		startingPosition = [10, 10, 'E'];
 		command = ['f', 'f', 'f', 'l', 'f', 'f', 'f'];
 		obstacle = [13, 12];
@@ -63,7 +57,6 @@ describe("MarsRover Kata Tests", function() {
   });
 
   it("rover encounters obstacle and moves up to the last possible point", function(){
-		grid = [30, 30];
 		startingPosition = [10, 10, 'S'];
 		command = ['b', 'b', 'b', 'b', 'b', 'b', 'b'];
 		obstacle = [10, 12];

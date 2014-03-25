@@ -1,56 +1,60 @@
 var marsRover = {
-	move: function (startingCoordinates, command, grid, obstacle) {
-		var x, y, newDirection, maxHorizontal, maxVertical;
-		function xyCoordinates (startingCoordinates) {
-			x = startingCoordinates[0];
-			y = startingCoordinates[1];
+	move: function (coordinates, command, grid, obstacle) {
+		var x, y, newDirection;
+		function xyCoordinates (coordinates) {
+			x = coordinates[0];
+			y = coordinates[1];
 		}
 
 		function detectObstacle(){
-			return ((startingCoordinates[0] === obstacle[0]) && (startingCoordinates[1] + 1 === obstacle[1]));
+			return ((coordinates[0] === obstacle[0]) && (coordinates[1] + 1 === obstacle[1]));
 		}
 
+		console.log('Starting Coordinates (' + coordinates[0]+','+ coordinates[1]+') command(s) ' + command);
 		for(var i=0; i < command.length; i++){
 			if (command[i] == 'l'){
-				startingCoordinates[2] = marsRover.left(startingCoordinates[2]);
-				xyCoordinates(startingCoordinates);
+				coordinates[2] = marsRover.left(coordinates[2]);
+				xyCoordinates(coordinates);
+				console.log('Turning to (' + x,y,coordinates[2].toUpperCase() + ')');
 			}else if (command[i] == 'r'){
-				startingCoordinates[2] = marsRover.right(startingCoordinates[2]);
-				xyCoordinates(startingCoordinates);
+				coordinates[2] = marsRover.right(coordinates[2]);
+				xyCoordinates(coordinates);
+				console.log('Turning to (' + x,y,coordinates[2].toUpperCase() + ')');
 			}else if ((command[i] == 'f') || (command[i] == 'b')){
 				if (detectObstacle()){
-					alert('You\'ve encountered an obstacle on (' + obstacle + ')');
+					console.log('You\'ve detected an obstacle on (' + obstacle + ')');
 					break;
 				}
-				switch(startingCoordinates[2].toLowerCase()){
+				switch(coordinates[2].toLowerCase()){
 					case 'n':
-						marsRover.north(startingCoordinates, command[i], grid, obstacle);
-						xyCoordinates(startingCoordinates);
+						marsRover.north(coordinates, command[i], grid, obstacle);
+						xyCoordinates(coordinates);
 						break;
 					case 'e':
-						marsRover.east(startingCoordinates, command[i], grid, obstacle);
-						xyCoordinates(startingCoordinates);
+						marsRover.east(coordinates, command[i], grid, obstacle);
+						xyCoordinates(coordinates);
 						break;
 					case 's':
-						marsRover.south(startingCoordinates, command[i], grid, obstacle);
-						xyCoordinates(startingCoordinates);
+						marsRover.south(coordinates, command[i], grid, obstacle);
+						xyCoordinates(coordinates);
 						break;
 					case 'w':
-						marsRover.west(startingCoordinates, command[i], grid, obstacle);
-						xyCoordinates(startingCoordinates);
+						marsRover.west(coordinates, command[i], grid, obstacle);
+						xyCoordinates(coordinates);
 						break;
 					default:
 						alert('Move: Not supposed to happen');
 				}
+				console.log('Moving to (' + x,y,coordinates[2].toUpperCase() + ')');
 			}else{
 				alert('Unrecognized command ' + command[i]);
 			}
 		}
-		console.log(x,y,startingCoordinates[2].toUpperCase());
-		return [x,y,startingCoordinates[2].toUpperCase()];
+		console.log('Stopped at (' + x,y,coordinates[2].toUpperCase() + ')');
+		return [x,y,coordinates[2].toUpperCase()];
 	},
 
-	north: function (startingCoordinates, singleCommand, grid, obstacle) {
+	north: function (coordinates, singleCommand, grid, obstacle) {
 		if (singleCommand == 'f'){
 			northForward();
 		}else if(singleCommand == 'b'){
@@ -58,26 +62,26 @@ var marsRover = {
 		}else{
 			alert('North: Not supposed to get here');
 		}
-		return startingCoordinates;
+		return coordinates;
 
 		function northForward () {
-			if((startingCoordinates[1] + 1) === grid[1]){
-				marsRover.wrapToZero(startingCoordinates,1);
+			if((coordinates[1] + 1) === grid[1]){
+				marsRover.wrapToZero(coordinates,1);
 			}else{
-				marsRover.plus(startingCoordinates, 1);
+				marsRover.plus(coordinates, 1);
 			}
 		}
 
 		function northBackward () {
-			if((startingCoordinates[1] - 1) === 0){
-				startingCoordinates[1] = grid[1] - 1;
+			if((coordinates[1] - 1) === 0){
+				coordinates[1] = grid[1] - 1;
 			}else{
-				marsRover.minus(startingCoordinates, 1);
+				marsRover.minus(coordinates, 1);
 			}
 		}
 	},
 
-	east: function (startingCoordinates, singleCommand, grid) {
+	east: function (coordinates, singleCommand, grid) {
 		if (singleCommand == 'f'){
 			eastForward();
 		}else if(singleCommand == 'b'){
@@ -85,26 +89,26 @@ var marsRover = {
 		}else{
 			alert('East: Not supposed to get here');
 		}
-		return startingCoordinates;
+		return coordinates;
 
 		function eastForward() {
-			if((startingCoordinates[0] + 1) === grid[0]){
-				marsRover.wrapToZero(startingCoordinates, 0);
+			if((coordinates[0] + 1) === grid[0]){
+				marsRover.wrapToZero(coordinates, 0);
 			}else{
-				marsRover.plus(startingCoordinates, 0);
+				marsRover.plus(coordinates, 0);
 			}
 		}
 
 		function eastBackward() {
-			if(startingCoordinates[0] === 0){
-				startingCoordinates[0] = grid[0] - 1;
+			if(coordinates[0] === 0){
+				coordinates[0] = grid[0] - 1;
 			}else{
-				marsRover.minus(startingCoordinates, 0);
+				marsRover.minus(coordinates, 0);
 			}
 		}
 	},
 
-	south: function (startingCoordinates, singleCommand, grid) {
+	south: function (coordinates, singleCommand, grid) {
 		if (singleCommand == 'f'){
 			southForward();
 		}else if(singleCommand == 'b'){
@@ -112,26 +116,26 @@ var marsRover = {
 		}else{
 			alert('South: Not supposed to get here');
 		}
-		return startingCoordinates;
+		return coordinates;
 
 		function southForward() {
-			if(startingCoordinates[1] === 0){
-				startingCoordinates[1] = grid[1] -1;
+			if(coordinates[1] === 0){
+				coordinates[1] = grid[1] -1;
 			}else{
-				marsRover.minus(startingCoordinates, 1);
+				marsRover.minus(coordinates, 1);
 			}
 		}
 
 		function southBackward() {
-			if((startingCoordinates[1] + 1) === grid[1]){
-				marsRover.wrapToZero(startingCoordinates,1);
+			if((coordinates[1] + 1) === grid[1]){
+				marsRover.wrapToZero(coordinates,1);
 			}else{
-				marsRover.plus(startingCoordinates, 1);
+				marsRover.plus(coordinates, 1);
 			}
 		}
 	},
 
-	west: function (startingCoordinates, singleCommand, grid) {
+	west: function (coordinates, singleCommand, grid) {
 		if (singleCommand == 'f'){
 			westForward();
 		}else if(singleCommand == 'b'){
@@ -139,35 +143,35 @@ var marsRover = {
 		}else{
 			alert('West: Not supposed to get here');
 		}
-		return startingCoordinates;
+		return coordinates;
 
 		function westForward () {
-			if(startingCoordinates[0] === 0){
-				startingCoordinates[0] = grid[0] - 1;
+			if(coordinates[0] === 0){
+				coordinates[0] = grid[0] - 1;
 			}else{
-				marsRover.minus(startingCoordinates, 0);
+				marsRover.minus(coordinates, 0);
 			}
 		}
 
 		function westBackward () {
-			if((startingCoordinates[0] + 1) === grid[0]){
-				marsRover.wrapToZero(startingCoordinates, 0);
+			if((coordinates[0] + 1) === grid[0]){
+				marsRover.wrapToZero(coordinates, 0);
 			}else{
-				marsRover.plus(startingCoordinates, 0);
+				marsRover.plus(coordinates, 0);
 			}
 		}
 	},
 
-	wrapToZero: function (startingCoordinates, index) {
-		startingCoordinates[index] = 0;
+	wrapToZero: function (coordinates, index) {
+		coordinates[index] = 0;
 	},
 
-	minus: function(startingCoordinates, index){
-		startingCoordinates[index] -= 1;
+	minus: function(coordinates, index){
+		coordinates[index] -= 1;
 	},
 
-	plus: function(startingCoordinates, index){
-		startingCoordinates[index] += 1;
+	plus: function(coordinates, index){
+		coordinates[index] += 1;
 	},
 
 	right: function (currentDirection) {
@@ -181,7 +185,7 @@ var marsRover = {
 			case 'w':
 				return 'n';
 			default:
-				alert('default');
+				alert('Right: default');
 		}
 	},
 
@@ -196,7 +200,7 @@ var marsRover = {
 			case 'w':
 				return 's';
 			default:
-				alert('default');
+				alert('Left: default');
 		}
 	}
 };
