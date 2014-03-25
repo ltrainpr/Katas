@@ -1,10 +1,15 @@
 var marsRover = {
-	move: function (startingCoordinates, command, grid) {
+	move: function (startingCoordinates, command, grid, obstacle) {
 		var x, y, newDirection, maxHorizontal, maxVertical;
 		function xyCoordinates (startingCoordinates) {
 			x = startingCoordinates[0];
 			y = startingCoordinates[1];
 		}
+
+		function detectObstacle(){
+			return ((startingCoordinates[0] === obstacle[0]) && (startingCoordinates[1] + 1 === obstacle[1]));
+		}
+
 		for(var i=0; i < command.length; i++){
 			if (command[i] == 'l'){
 				startingCoordinates[2] = marsRover.left(startingCoordinates[2]);
@@ -13,21 +18,25 @@ var marsRover = {
 				startingCoordinates[2] = marsRover.right(startingCoordinates[2]);
 				xyCoordinates(startingCoordinates);
 			}else if ((command[i] == 'f') || (command[i] == 'b')){
+				if (detectObstacle()){
+					alert('You\'ve encountered an obstacle on (' + obstacle + ')');
+					break;
+				}
 				switch(startingCoordinates[2].toLowerCase()){
 					case 'n':
-						marsRover.north(startingCoordinates, command[i], grid);
+						marsRover.north(startingCoordinates, command[i], grid, obstacle);
 						xyCoordinates(startingCoordinates);
 						break;
 					case 'e':
-						marsRover.east(startingCoordinates, command[i], grid);
+						marsRover.east(startingCoordinates, command[i], grid, obstacle);
 						xyCoordinates(startingCoordinates);
 						break;
 					case 's':
-						marsRover.south(startingCoordinates, command[i], grid);
+						marsRover.south(startingCoordinates, command[i], grid, obstacle);
 						xyCoordinates(startingCoordinates);
 						break;
 					case 'w':
-						marsRover.west(startingCoordinates, command[i], grid);
+						marsRover.west(startingCoordinates, command[i], grid, obstacle);
 						xyCoordinates(startingCoordinates);
 						break;
 					default:
@@ -41,7 +50,7 @@ var marsRover = {
 		return [x,y,startingCoordinates[2].toUpperCase()];
 	},
 
-	north: function (startingCoordinates, singleCommand, grid) {
+	north: function (startingCoordinates, singleCommand, grid, obstacle) {
 		if (singleCommand == 'f'){
 			northForward();
 		}else if(singleCommand == 'b'){
@@ -67,7 +76,6 @@ var marsRover = {
 			}
 		}
 	},
-
 
 	east: function (startingCoordinates, singleCommand, grid) {
 		if (singleCommand == 'f'){
