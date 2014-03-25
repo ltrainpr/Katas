@@ -63,15 +63,15 @@ var marsRover = {
 	north: function (startingCoordinates, singleCommand, grid) {
 		if (singleCommand == 'f'){
 			if((startingCoordinates[1] + 1) === grid[1]){
-				startingCoordinates[1] = 0;
+				marsRover.wrapToZero(startingCoordinates,1);
 			}else{
-				startingCoordinates[1] += 1;
+				marsRover.plus(startingCoordinates, 1);
 			}
 		}else if(singleCommand == 'b'){
 			if((startingCoordinates[1] - 1) === 0){
 				startingCoordinates[1] = grid[1] - 1;
 			}else{
-				startingCoordinates[1] -= 1;
+				marsRover.minus(startingCoordinates, 1);
 			}
 		}else{
 			alert('North: Not supposed to get here');
@@ -79,21 +79,33 @@ var marsRover = {
 		return startingCoordinates;
 	},
 
+	wrapToZero: function (startingCoordinates, index) {
+		startingCoordinates[index] = 0;
+	},
+
+	minus: function(startingCoordinates, index){
+		startingCoordinates[index] -= 1;
+	},
+
+	plus: function(startingCoordinates, index){
+		startingCoordinates[index] += 1;
+	},
+
 	east: function (startingCoordinates, singleCommand, grid) {
 		if (singleCommand == 'f'){
 			if((startingCoordinates[0] + 1) === grid[0]){
-				startingCoordinates[0] = 0;
+				marsRover.wrapToZero(startingCoordinates, 0);
 			}else{
-				startingCoordinates[0] += 1;
+				marsRover.plus(startingCoordinates, 0);
 			}
 		}else if(singleCommand == 'b'){
 			if(startingCoordinates[0] === 0){
 				startingCoordinates[0] = grid[0] - 1;
 			}else{
-				startingCoordinates[0] -= 1;
+				marsRover.minus(startingCoordinates, 0);
 			}
 		}else{
-			alert('North: Not supposed to get here');
+			alert('East: Not supposed to get here');
 		}
 		return startingCoordinates;
 	},
@@ -103,16 +115,16 @@ var marsRover = {
 			if(startingCoordinates[1] === 0){
 				startingCoordinates[1] = grid[1] -1;
 			}else{
-				startingCoordinates[1] -= 1;
+				marsRover.minus(startingCoordinates, 1);
 			}
 		}else if(singleCommand == 'b'){
 			if((startingCoordinates[1] + 1) === grid[1]){
-				startingCoordinates[1] = 0;
+				marsRover.wrapToZero(startingCoordinates,1);
 			}else{
-				startingCoordinates[1] += 1;
+				marsRover.plus(startingCoordinates, 1);
 			}
 		}else{
-			alert('North: Not supposed to get here');
+			alert('South: Not supposed to get here');
 		}
 		return startingCoordinates;
 	},
@@ -122,16 +134,16 @@ var marsRover = {
 			if(startingCoordinates[0] === 0){
 				startingCoordinates[0] = grid[0] - 1;
 			}else{
-				startingCoordinates[0] -= 1;
+				marsRover.minus(startingCoordinates, 0);
 			}
 		}else if(singleCommand == 'b'){
 			if((startingCoordinates[0] + 1) === grid[0]){
-				startingCoordinates[0] = 0;
+				marsRover.wrapToZero(startingCoordinates, 0);
 			}else{
-				startingCoordinates[0] += 1;
+				marsRover.plus(startingCoordinates, 0);
 			}
 		}else{
-			alert('North: Not supposed to get here');
+			alert('West: Not supposed to get here');
 		}
 		return startingCoordinates;
 	},
