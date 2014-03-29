@@ -1,31 +1,33 @@
+var X_COORDINATE=0, Y_COORDINATE=1, CARDINAL_DIRECTION=2;
+
 var marsRover = {
 	move: function (coordinates, command, grid, obstacle) {
 		var x, y, newDirection;
 		function xyCoordinates (coordinates) {
-			x = coordinates[0];
-			y = coordinates[1];
+			x = coordinates[X_COORDINATE];
+			y = coordinates[Y_COORDINATE];
 		}
 
 		function detectObstacle(){
-			return ((coordinates[0] === obstacle[0]) && (coordinates[1] + 1 === obstacle[1]));
+			return ((coordinates[X_COORDINATE] === obstacle[X_COORDINATE]) && (coordinates[Y_COORDINATE] + 1 === obstacle[Y_COORDINATE]));
 		}
 
-		console.log('Starting Coordinates (' + coordinates[0]+','+ coordinates[1]+') command(s) ' + command);
+		console.log('Starting Coordinates (' + coordinates[X_COORDINATE]+','+ coordinates[Y_COORDINATE]+') command(s) ' + command);
 		for(var i=0; i < command.length; i++){
 			if (command[i] == 'l'){
-				coordinates[2] = marsRover.left(coordinates[2]);
+				coordinates[CARDINAL_DIRECTION] = marsRover.left(coordinates[CARDINAL_DIRECTION]);
 				xyCoordinates(coordinates);
-				console.log('Turning to (' + x,y,coordinates[2].toUpperCase() + ')');
+				console.log('Turning to (' + x,y,coordinates[CARDINAL_DIRECTION].toUpperCase() + ')');
 			}else if (command[i] == 'r'){
-				coordinates[2] = marsRover.right(coordinates[2]);
+				coordinates[CARDINAL_DIRECTION] = marsRover.right(coordinates[CARDINAL_DIRECTION]);
 				xyCoordinates(coordinates);
-				console.log('Turning to (' + x,y,coordinates[2].toUpperCase() + ')');
+				console.log('Turning to (' + x,y,coordinates[CARDINAL_DIRECTION].toUpperCase() + ')');
 			}else if ((command[i] == 'f') || (command[i] == 'b')){
 				if (detectObstacle()){
 					console.log('You\'ve detected an obstacle on (' + obstacle + ')');
 					break;
 				}
-				switch(coordinates[2].toLowerCase()){
+				switch(coordinates[CARDINAL_DIRECTION].toLowerCase()){
 					case 'n':
 						marsRover.north(coordinates, command[i], grid, obstacle);
 						xyCoordinates(coordinates);
@@ -45,13 +47,13 @@ var marsRover = {
 					default:
 						alert('Move: Not supposed to happen');
 				}
-				console.log('Moving to (' + x,y,coordinates[2].toUpperCase() + ')');
+				console.log('Moving to (' + x,y,coordinates[CARDINAL_DIRECTION].toUpperCase() + ')');
 			}else{
 				alert('Unrecognized command ' + command[i]);
 			}
 		}
-		console.log('Stopped at (' + x,y,coordinates[2].toUpperCase() + ')');
-		return [x,y,coordinates[2].toUpperCase()];
+		console.log('Stopped at (' + x,y,coordinates[CARDINAL_DIRECTION].toUpperCase() + ')');
+		return [x,y,coordinates[CARDINAL_DIRECTION].toUpperCase()];
 	},
 
 	north: function (coordinates, singleCommand, grid, obstacle) {
@@ -65,7 +67,7 @@ var marsRover = {
 		return coordinates;
 
 		function northForward () {
-			if((coordinates[1] + 1) === grid[1]){
+			if((coordinates[Y_COORDINATE] + 1) === grid[Y_COORDINATE]){
 				marsRover.wrapToZero(coordinates,1);
 			}else{
 				marsRover.plus(coordinates, 1);
@@ -73,8 +75,8 @@ var marsRover = {
 		}
 
 		function northBackward () {
-			if((coordinates[1] - 1) === 0){
-				coordinates[1] = grid[1] - 1;
+			if((coordinates[Y_COORDINATE] - 1) === 0){
+				coordinates[Y_COORDINATE] = grid[Y_COORDINATE] - 1;
 			}else{
 				marsRover.minus(coordinates, 1);
 			}
@@ -92,7 +94,7 @@ var marsRover = {
 		return coordinates;
 
 		function eastForward() {
-			if((coordinates[0] + 1) === grid[0]){
+			if((coordinates[X_COORDINATE] + 1) === grid[X_COORDINATE]){
 				marsRover.wrapToZero(coordinates, 0);
 			}else{
 				marsRover.plus(coordinates, 0);
@@ -100,8 +102,8 @@ var marsRover = {
 		}
 
 		function eastBackward() {
-			if(coordinates[0] === 0){
-				coordinates[0] = grid[0] - 1;
+			if(coordinates[X_COORDINATE] === 0){
+				coordinates[X_COORDINATE] = grid[X_COORDINATE] - 1;
 			}else{
 				marsRover.minus(coordinates, 0);
 			}
@@ -119,15 +121,15 @@ var marsRover = {
 		return coordinates;
 
 		function southForward() {
-			if(coordinates[1] === 0){
-				coordinates[1] = grid[1] -1;
+			if(coordinates[Y_COORDINATE] === 0){
+				coordinates[Y_COORDINATE] = grid[Y_COORDINATE] -1;
 			}else{
 				marsRover.minus(coordinates, 1);
 			}
 		}
 
 		function southBackward() {
-			if((coordinates[1] + 1) === grid[1]){
+			if((coordinates[Y_COORDINATE] + 1) === grid[Y_COORDINATE]){
 				marsRover.wrapToZero(coordinates,1);
 			}else{
 				marsRover.plus(coordinates, 1);
@@ -146,15 +148,15 @@ var marsRover = {
 		return coordinates;
 
 		function westForward () {
-			if(coordinates[0] === 0){
-				coordinates[0] = grid[0] - 1;
+			if(coordinates[X_COORDINATE] === 0){
+				coordinates[X_COORDINATE] = grid[X_COORDINATE] - 1;
 			}else{
 				marsRover.minus(coordinates, 0);
 			}
 		}
 
 		function westBackward () {
-			if((coordinates[0] + 1) === grid[0]){
+			if((coordinates[X_COORDINATE] + 1) === grid[X_COORDINATE]){
 				marsRover.wrapToZero(coordinates, 0);
 			}else{
 				marsRover.plus(coordinates, 0);
