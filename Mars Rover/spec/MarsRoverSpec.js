@@ -11,26 +11,26 @@ describe("MarsRover Kata Tests", function() {
 
   it("moves rover facing north one coordinate forward", function(){
 		command = ['f'];
-		
+
 		expect(move(startingPosition, command, grid, obstacle)).toEqual([0,1,'N']);
   });
 
   it("moves rover facing north to face East", function(){
 		command = ['r'];
-		
+
 		expect(move(startingPosition, command, grid, obstacle)).toEqual([0,0,'E']);
   });
 
   it("moves rover facing north to face East", function(){
 		command = ['r', 'f'];
-		
+
 		expect(move(startingPosition, command, grid, obstacle)).toEqual([1,0,'E']);
   });
 
   it("turns rover right twice and moves forward twice and backwards once", function(){
 		startingPosition = [5, 6, 'E'];
 		command = ['r', 'r', 'f', 'f', 'b'];
-		
+
 		expect(move(startingPosition, command, grid, obstacle)).toEqual([4,6,'W']);
   });
 
