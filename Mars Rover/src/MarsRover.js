@@ -34,11 +34,11 @@ var leftFrom = function (currentDirection) {
 
 var translations = {
   "l": function(coordinates){
-    return [coordinates[X_COORDINATE], coordinates[Y_COORDINATE], leftFrom(coordinates[CARDINAL_DIRECTION])];
+    return [x, y, leftFrom(coordinates[CARDINAL_DIRECTION])];
   },
 
   "r": function(coordinates){
-    return [coordinates[X_COORDINATE], coordinates[Y_COORDINATE], rightFrom(coordinates[CARDINAL_DIRECTION])];
+    return [x, y, rightFrom(coordinates[CARDINAL_DIRECTION])];
   }
 };
 
