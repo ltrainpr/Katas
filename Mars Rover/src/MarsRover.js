@@ -1,5 +1,4 @@
 var X_COORDINATE=0, Y_COORDINATE=1, CARDINAL_DIRECTION=2;
-var x, y, newDirection;
 var startOfColumnOrRow = 0;
 
 var rightFrom = function (currentDirection) {
@@ -33,129 +32,167 @@ var leftFrom = function (currentDirection) {
 };
 
 var translations = {
-  "l": function(coordinates){
-    return [x, y, leftFrom(coordinates[CARDINAL_DIRECTION])];
+  "l": function(parametersObject){
+    return [parametersObject.x, parametersObject.y, leftFrom(parametersObject.cardinalDirection)];
   },
 
-  "r": function(coordinates){
-    return [x, y, rightFrom(coordinates[CARDINAL_DIRECTION])];
+  "r": function(parametersObject){
+    return [parametersObject.x, parametersObject.y, rightFrom(parametersObject.cardinalDirection)];
   }
 };
 
 var marsRover = {
   move: function (coordinates, command, grid, obstacle) {
+    var newCoordinates;
+    var coordinatesCopy = coordinates;
+    var parameters = {
+      x: coordinatesCopy[X_COORDINATE],
 
-      x = coordinates[X_COORDINATE];
-      y = coordinates[Y_COORDINATE];
+      y: coordinatesCopy[Y_COORDINATE],
+
+      cardinalDirection: coordinatesCopy[CARDINAL_DIRECTION],
+
+      commands: command,
+
+      gridDimensions: grid,
+
+      obstacles: obstacle
+    };
 
 
     function detectObstacle(coordinates){
-      return ((x === obstacle[X_COORDINATE]) && (y + 1 === obstacle[Y_COORDINATE]));
+      return ((parameters.x === parameters.obstacles[X_COORDINATE]) && (parameters.y + 1 === parameters.obstacles[Y_COORDINATE]));
     }
 
     console.log('Starting Coordinates (' + coordinates[X_COORDINATE]+','+ coordinates[Y_COORDINATE]+') command(s) ' + command);
     for(var i=0; i < command.length; i++){
-      var translationFn = translations[command[i]];
+      var translationFn = translations[parameters.commands[i]];
       if (translationFn){
-        var nextCoordinates = translationFn(coordinates);
+        var nextCoordinates = translationFn(parameters);
         if (!detectObstacle(nextCoordinates)) {
-          coordinates = nextCoordinates;
+          parameters['cardinalDirection'] = nextCoordinates[CARDINAL_DIRECTION];
         }
 
-        console.log('Turning to (' + x,y,coordinates[CARDINAL_DIRECTION].toUpperCase() + ')');
-      }else if ((command[i] === 'f') || (command[i] === 'b')){
-        if (detectObstacle(coordinates)){
-          console.log('You\'ve detected an obstacle on (' + obstacle + ')');
+        console.log('Turning to (' + parameters.x, parameters.y, parameters.cardinalDirection + ')');
+      }else if ((parameters.commands[i] === 'f') || (parameters.commands[i] === 'b')){
+        if (detectObstacle(parameters)){
+          console.log('You\'ve detected an obstacle on (' + parameters.obstacles + ')');
           break;
         }
-        if(direction[coordinates[CARDINAL_DIRECTION]]){
-          direction[coordinates[CARDINAL_DIRECTION]](coordinates, command[i], grid, obstacle);
-
+        if(direction[parameters.cardinalDirection]){
+          newCoordinates = direction[parameters.cardinalDirection](parameters, i);
+          parameters.x = newCoordinates[X_COORDINATE];
+          parameters.y = newCoordinates[Y_COORDINATE];
+          parameters.cardinalDirection = newCoordinates[CARDINAL_DIRECTION];
         }else{
           alert('Move forward/backward: Not supposed to happen');
         }
-        console.log('Moving to (' + x,y,coordinates[CARDINAL_DIRECTION].toUpperCase() + ')');
+        console.log('Moving to (' + parameters.x, parameters.y, parameters.cardinalDirection + ')');
       }else{
         alert('Unrecognized command ' + command[i]);
       }
     }
-    console.log('Stopped at (' + x,y,coordinates[CARDINAL_DIRECTION].toUpperCase() + ')');
-    return [x,y,coordinates[CARDINAL_DIRECTION].toUpperCase()];
+    console.log('Stopped at (' + parameters.x, parameters.y, parameters.cardinalDirection + ')');
+    return [parameters.x, parameters.y, parameters.cardinalDirection];
   },
 };
 
 var direction = {
-  N: function (coordinates, singleCommand, grid) {
-    if (singleCommand === 'f'){
-      northForward(coordinates, grid);
-    }else if(singleCommand === 'b'){
-      northBackward(coordinates, grid);
+  N: function (parametersObject, index) {
+    var newCoordinates;
+    if (parametersObject.commands[index] === 'f'){
+      newCoordinates =  northForward(parametersObject);
+    }else if(parametersObject.commands[index] === 'b'){
+      newCoordinates = northBackward(parametersObject);
     }else{
       alert('North: Not supposed to get here');
     }
+    return newCoordinates;
   },
 
-  E: function (coordinates, singleCommand, grid) {
-    if (singleCommand === 'f'){
-      eastForward(coordinates, grid);
-    }else if(singleCommand === 'b'){
-      eastBackward(coordinates, grid);
+  E: function (parametersObject, index) {
+    var newCoordinates;
+    if (parametersObject.commands[index] === 'f'){
+      newCoordinates = eastForward(parametersObject);
+    }else if(parametersObject.commands[index] === 'b'){
+      newCoordinates = eastBackward(parametersObject);
     }else{
       alert('East: Not supposed to get here');
     }
+    return newCoordinates;
   },
 
-  S: function (coordinates, singleCommand, grid) {
-    if (singleCommand === 'f'){
-      northBackward(coordinates, grid);
-    }else if(singleCommand === 'b'){
-      northForward(coordinates, grid);
+  S: function (parametersObject, index) {
+    var newCoordinates;
+    if (parametersObject.commands[index] === 'f'){
+      newCoordiantes = northBackward(parametersObject);
+    }else if(parametersObject.commands[index] === 'b'){
+      newCoordinates = northForward(parametersObject);
     }else{
       alert('South: Not supposed to get here');
     }
+    return newCoordinates;
   },
 
-  W: function (coordinates, singleCommand, grid) {
-    if (singleCommand === 'f'){
-      eastBackward(coordinates, grid);
-    }else if(singleCommand === 'b'){
-      eastForward(coordinates, grid);
+  W: function (parametersObject, index) {
+    var newCoordinates;
+    if (parametersObject.commands[index] === 'f'){
+      newCoordinates = eastBackward(parametersObject);
+    }else if(parametersObject.commands[index] === 'b'){
+      newCoordinates = eastForward(parametersObject);
     }else{
       alert('West: Not supposed to get here');
     }
+    return newCoordinates;
   }
 };
 
-var northForward = function(coordinates, grid) {
-  if(upcomingForwardCoordinate(y) === grid[Y_COORDINATE]){
+var northForward = function(parametersObject) {
+  var newCoordinates, y;
+  y = parametersObject.y;
+  if(upcomingForwardCoordinate(parametersObject.y) === parametersObject.gridDimensions[Y_COORDINATE]){
     y = startOfColumnOrRow;
   }else{
     y += 1;
   }
+  newCoordinates = [parametersObject.x, y, parametersObject.cardinalDirection];
+  return newCoordinates;
 };
 
-var northBackward = function (coordinates, grid) {
-  if(upcomingBackwardCoordinate(y) === 0){
-    y = grid[Y_COORDINATE] - 1;
+var northBackward = function (parametersObject) {
+  var newCoordinates, y;
+  y = parametersObject.y;
+  if(upcomingBackwardCoordinate(parametersObject.y) === 0){
+    y = parametersObject.gridDimensions[Y_COORDINATE] - 1;
   }else{
     y -= 1;
   }
+  newCoordinates = [parametersObject.x, y, parametersObject.cardinalDirection];
+  return newCoordinates;
 };
 
-var eastForward = function (coordinates, grid) {
-  if(upcomingForwardCoordinate(x) === grid[X_COORDINATE]){
+var eastForward = function (parametersObject) {
+  var newCoordinates, x;
+  x = parametersObject.x;
+  if(upcomingForwardCoordinate(parametersObject.x) === parametersObject.gridDimensions[X_COORDINATE]){
     x = startOfColumnOrRow;
   }else{
     x += 1;
   }
+  newCoordinates = [x, parametersObject.y, parametersObject.cardinalDirection];
+  return newCoordinates;
 };
 
-var eastBackward = function(coordinates, grid) {
-  if(upcomingBackwardCoordinate(x) === 0){
-    x = grid[X_COORDINATE] - 1;
+var eastBackward = function(parametersObject) {
+  var newCoordinates, x;
+  x = parametersObject.x;
+  if(upcomingBackwardCoordinate(parametersObject.x) === 0){
+    x = parametersObject.gridDimensions[X_COORDINATE] - 1;
   }else{
     x -= 1;
   }
+  newCoordinates = [x, parametersObject.y, parametersObject.cardinalDirection];
+  return newCoordinates;
 };
 
 var upcomingForwardCoordinate = function(axis){
