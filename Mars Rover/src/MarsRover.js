@@ -1,6 +1,27 @@
 var X_COORDINATE=0, Y_COORDINATE=1, CARDINAL_DIRECTION=2;
 var startOfColumnOrRow = 0;
 
+Array.prototype.compare = function(array){
+  if(!array){
+    return false;
+  }
+
+  if(this.length != array.length){
+    return false;
+  }
+
+  for(var i = 0, l=this.length; i < l; i++) {
+    if(this[i] instanceof Array && array[i] instanceof Array){
+      if(!this[i].compare(array[i])){
+        return false;
+      }
+    } else if (this[i] != array[i]){
+      return false;
+    }
+  }
+  return true;
+};
+
 var rightFrom = function (currentDirection) {
   switch(currentDirection.toUpperCase()){
     case 'N':
@@ -59,6 +80,7 @@ var translations = {
 
 var forward = {
   N: function (parametersObject) {
+    console.log(northForward(parametersObject));
     return northForward(parametersObject);
   },
 
@@ -95,17 +117,17 @@ var backward = {
 };
 
 
-var detectObstacle = function (nextCoordinate, obstacle){
-  return (yAxisObstacleDetection(nextCoordinate, obstacle) || xAxisObstacleDetection(nextCoordinate, obstacle));
-};
+// var detectObstacle = function (nextCoordinate, obstacle){
+//   return (yAxisObstacleDetection(nextCoordinate, obstacle) || xAxisObstacleDetection(nextCoordinate, obstacle));
+// };
 
-var yAxisObstacleDetection = function(nextCoordinate, obstacle){
-  return ((nextCoordinate[X_COORDINATE] === obstacle[X_COORDINATE]) && (nextCoordinate[Y_COORDINATE] + 1 === obstacle[Y_COORDINATE]));
-};
+// var yAxisObstacleDetection = function(nextCoordinate, obstacle){
+//   return ((nextCoordinate[X_COORDINATE] === obstacle[X_COORDINATE]) && (nextCoordinate[Y_COORDINATE] + 1 === obstacle[Y_COORDINATE]));
+// };
 
-var xAxisObstacleDetection = function(nextCoordinate, obstacle){
-  return ((nextCoordinate[X_COORDINATE] + 1 === obstacle[X_COORDINATE]) && (nextCoordinate[Y_COORDINATE] === obstacle[Y_COORDINATE]));
-};
+// var xAxisObstacleDetection = function(nextCoordinate, obstacle){
+//   return ((nextCoordinate[X_COORDINATE] + 1 === obstacle[X_COORDINATE]) && (nextCoordinate[Y_COORDINATE] === obstacle[Y_COORDINATE]));
+// };
 
 var marsRover = {
   move: function (coordinates, command, grid, obstacle) {
@@ -143,51 +165,66 @@ var marsRover = {
 };
 
 var northForward = function(parametersObject) {
-  var newCoordinates, y;
+  var newCoordinate, y;
   y = parametersObject.y;
   if(upcomingForwardCoordinate(y) === parametersObject.gridDimensions[Y_COORDINATE]){
     y = startOfColumnOrRow;
   }else{
     y += 1;
   }
-  newCoordinates = [parametersObject.x, y, parametersObject.cardinalDirection];
-  return newCoordinates;
+  newCoordinate = [parametersObject.x, y];
+  return detectObstacle(newCoordinate, parametersObject);
 };
 
 var northBackward = function (parametersObject) {
-  var newCoordinates, y;
+  var newCoordinate, y;
   y = parametersObject.y;
   if(upcomingBackwardCoordinate(y) === 0){
     y = parametersObject.gridDimensions[Y_COORDINATE] - 1;
   }else{
     y -= 1;
   }
-  newCoordinates = [parametersObject.x, y, parametersObject.cardinalDirection];
-  return newCoordinates;
+  newCoordinate = [parametersObject.x, y];
+  return detectObstacle(newCoordinate, parametersObject);
 };
 
 var eastForward = function (parametersObject) {
-  var newCoordinates, x;
+  var newCoordinate, x;
   x = parametersObject.x;
   if(upcomingForwardCoordinate(x) === parametersObject.gridDimensions[X_COORDINATE]){
     x = startOfColumnOrRow;
   }else{
     x += 1;
   }
-  newCoordinates = [x, parametersObject.y, parametersObject.cardinalDirection];
-  return newCoordinates;
+  newCoordinate = [x, parametersObject.y];
+  return detectObstacle(newCoordinate, parametersObject);
 };
 
 var eastBackward = function(parametersObject) {
-  var newCoordinates, x;
+  var newCoordinate, x;
   x = parametersObject.x;
   if(upcomingBackwardCoordinate(x) === 0){
     x = parametersObject.gridDimensions[X_COORDINATE] - 1;
   }else{
     x -= 1;
   }
-  newCoordinates = [x, parametersObject.y, parametersObject.cardinalDirection];
-  return newCoordinates;
+  newCoordinate = [x, parametersObject.y];
+  return detectObstacle(newCoordinate, parametersObject);
+};
+
+var detectObstacle = function(newCoordinate, parametersObject){
+  var currentCoordinate = [parametersObject.x, parametersObject.y];
+  if(checkForObstacle(newCoordinate, parametersObject)){
+    currentCoordinate.push(parametersObject.cardinalDirection);
+    return currentCoordinate;
+  } else {
+    newCoordinate.push(parametersObject.cardinalDirection);
+    return newCoordinate;
+  }
+};
+
+var checkForObstacle = function(newCoordinates, parametersObject){
+  return newCoordinates.compare(parametersObject.obstacles);
 };
 
 var upcomingForwardCoordinate = function(axis){
