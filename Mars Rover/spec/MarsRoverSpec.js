@@ -64,7 +64,7 @@ describe("MarsRover Kata Tests", function() {
     expect(move(startingPosition, command, grid, obstacle)).toEqual([10, 11, 'S']);
   });
 
-  it("rover encounters detects obstacle when moving backwards", function(){
+  it("rover detects obstacle when moving backwards", function(){
 		startingPosition = [4, 4, 'S'];
 		command = ['l', 'b'];
 		obstacle = [3, 4];

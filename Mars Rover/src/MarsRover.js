@@ -127,23 +127,26 @@ var marsRover = {
       gridDimensions: grid,
       obstacles: obstacle
     };
+    var newParameters = (newParameters || parameters);
 
     console.log('Starting Coordinates (' + coordinates[X_COORDINATE] + ',' + coordinates[Y_COORDINATE] + ',' +
      coordinates[CARDINAL_DIRECTION] + ') command(s) ' + command);
     for(var i=0; i < command.length; i++){
       var translationFn = translations[parameters.commands[i]];
-      if (translationFn){
-        nextCoordinates = translationFn(parameters);
-        parameters.x = nextCoordinates[X_COORDINATE];
-        parameters.y = nextCoordinates[Y_COORDINATE];
-        parameters.cardinalDirection = nextCoordinates[CARDINAL_DIRECTION];
-      }else{
-        alert('Unrecognized command ' + command[i]);
-      }
+      nextCoordinates = translationValidation(translationFn, parameters.commands, newParameters);
+      newParameters = {x: nextCoordinates[0], y: nextCoordinates[1], cardinalDirection: nextCoordinates[2], commands: parameters.commands, gridDimensions: parameters.gridDimensions, obstacles: parameters.obstacles};
     }
-    console.log('Stopped at (' + parameters.x, parameters.y, parameters.cardinalDirection + ')');
+    console.log('Stopped at (' + nextCoordinates[0], nextCoordinates[1], nextCoordinates[2] + ')');
     return nextCoordinates;
   },
+};
+
+var translationValidation = function(translationFn, command, newParameters){
+  if (translationFn){
+    return translationFn(newParameters);
+  }else{
+    alert('Unrecognized command ' + command[i]);
+  }
 };
 
 var northForward = function(parametersObject) {
