@@ -1,7 +1,8 @@
 var X_COORDINATE=0, Y_COORDINATE=1, CARDINAL_DIRECTION=2;
 var startOfColumnOrRow = 0;
 
-Array.prototype.compare = function(array){
+Object.defineProperty(Array.prototype, 'compare', {value: compareFunction});
+function compareFunction(array){
   if(!array){
     return false;
   }
@@ -20,7 +21,7 @@ Array.prototype.compare = function(array){
     }
   }
   return true;
-};
+}
 
 var rightFrom = function (currentDirection) {
   switch(currentDirection.toUpperCase()){
@@ -80,7 +81,6 @@ var translations = {
 
 var forward = {
   N: function (parametersObject) {
-    console.log(northForward(parametersObject));
     return northForward(parametersObject);
   },
 
@@ -93,7 +93,6 @@ var forward = {
   },
 
   W: function (parametersObject) {
-    // console.log(eastBackward(parametersObject));
     return eastBackward(parametersObject);
   }
 };
@@ -116,22 +115,9 @@ var backward = {
   }
 };
 
-
-// var detectObstacle = function (nextCoordinate, obstacle){
-//   return (yAxisObstacleDetection(nextCoordinate, obstacle) || xAxisObstacleDetection(nextCoordinate, obstacle));
-// };
-
-// var yAxisObstacleDetection = function(nextCoordinate, obstacle){
-//   return ((nextCoordinate[X_COORDINATE] === obstacle[X_COORDINATE]) && (nextCoordinate[Y_COORDINATE] + 1 === obstacle[Y_COORDINATE]));
-// };
-
-// var xAxisObstacleDetection = function(nextCoordinate, obstacle){
-//   return ((nextCoordinate[X_COORDINATE] + 1 === obstacle[X_COORDINATE]) && (nextCoordinate[Y_COORDINATE] === obstacle[Y_COORDINATE]));
-// };
-
 var marsRover = {
   move: function (coordinates, command, grid, obstacle) {
-    var newCoordinates;
+    var newCoordinates, nextCoordinates;
     var coordinatesCopy = coordinates;
     var parameters = {
       x: coordinatesCopy[X_COORDINATE],
@@ -148,10 +134,6 @@ var marsRover = {
       var translationFn = translations[parameters.commands[i]];
       if (translationFn){
         nextCoordinates = translationFn(parameters);
-        if (detectObstacle(nextCoordinates, obstacle)) {
-          console.log('Encountered an obstacle.  Stopping at  ' + nextCoordinates);
-          return nextCoordinates;
-        }
         parameters.x = nextCoordinates[X_COORDINATE];
         parameters.y = nextCoordinates[Y_COORDINATE];
         parameters.cardinalDirection = nextCoordinates[CARDINAL_DIRECTION];
@@ -216,6 +198,7 @@ var detectObstacle = function(newCoordinate, parametersObject){
   var currentCoordinate = [parametersObject.x, parametersObject.y];
   if(checkForObstacle(newCoordinate, parametersObject)){
     currentCoordinate.push(parametersObject.cardinalDirection);
+    console.log('Encountered obstacle at ' + newCoordinate);
     return currentCoordinate;
   } else {
     newCoordinate.push(parametersObject.cardinalDirection);
