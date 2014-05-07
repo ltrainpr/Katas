@@ -150,75 +150,86 @@ var translationValidation = function(translationFn, command, newParameters){
 };
 
 var northForward = function(parametersObject) {
-  var newCoordinate, y;
-  y = parametersObject.y;
-  if(upcomingForwardCoordinate(y) === parametersObject.gridDimensions[Y_COORDINATE]){
-    y = startOfColumnOrRow;
-  }else{
-    y += 1;
-  }
-  newCoordinate = [parametersObject.x, y];
+  var newY = parametersObject.y;
+  var compareLeft = plusOne(newY);
+  var compareRight = parametersObject.gridDimensions[Y_COORDINATE];
+  var addOrSubtract = plusOne(newY);
+
+  var newCoordinate = [parametersObject.x, consolidate(newY, compareLeft, compareRight, startOfColumnOrRow, addOrSubtract)];
   return detectObstacle(newCoordinate, parametersObject);
 };
 
 var northBackward = function (parametersObject) {
-  var newCoordinate, y;
-  y = parametersObject.y;
-  if(upcomingBackwardCoordinate(y) === 0){
-    y = parametersObject.gridDimensions[Y_COORDINATE] - 1;
-  }else{
-    y -= 1;
-  }
-  newCoordinate = [parametersObject.x, y];
+  var newY = parametersObject.y;
+  var compareLeft = minusOne(newY);
+  var ifTrueSetToThis = minusOne(parametersObject.gridDimensions[Y_COORDINATE]);
+  var addOrSubtract = minusOne(newY);
+
+  var newCoordinate = [parametersObject.x, consolidate(newY, compareLeft, startOfColumnOrRow, ifTrueSetToThis, addOrSubtract)];
   return detectObstacle(newCoordinate, parametersObject);
 };
 
 var eastForward = function (parametersObject) {
-  var newCoordinate, x;
-  x = parametersObject.x;
-  if(upcomingForwardCoordinate(x) === parametersObject.gridDimensions[X_COORDINATE]){
-    x = startOfColumnOrRow;
-  }else{
-    x += 1;
-  }
-  newCoordinate = [x, parametersObject.y];
+  var x = parametersObject.x;
+  var compareLeft = plusOne(x);
+  var compareRight = parametersObject.gridDimensions[X_COORDINATE];
+  var ifTrueSetToThis = minusOne(parametersObject.gridDimensions[Y_COORDINATE]);
+  var addOrSubtract = plusOne(x);
+
+  var newCoordinate = [consolidate(x, compareLeft, compareRight, startOfColumnOrRow, addOrSubtract), parametersObject.y];
   return detectObstacle(newCoordinate, parametersObject);
 };
 
 var eastBackward = function(parametersObject) {
-  var newCoordinate, x;
-  x = parametersObject.x;
-  if(upcomingBackwardCoordinate(x) === 0){
-    x = parametersObject.gridDimensions[X_COORDINATE] - 1;
-  }else{
-    x -= 1;
-  }
-  newCoordinate = [x, parametersObject.y];
+  var x = parametersObject.x;
+  var compareLeft = minusOne(x);
+  var ifTrueSetToThis = parametersObject.gridDimensions[X_COORDINATE] - 1;
+  var addOrSubtract = minusOne(x);
+
+  var newCoordinate = [consolidate(x, compareLeft, startOfColumnOrRow, ifTrueSetToThis, addOrSubtract), parametersObject.y];
   return detectObstacle(newCoordinate, parametersObject);
 };
 
+var consolidate = function(changingVar, compareLeft, compareRight, ifTrueSetToThis, addOrSubtract){
+  var changingVariable = changingVar;
+  if(compareLeft === compareRight){
+    changingVariable = ifTrueSetToThis;
+  } else {
+    changingVariable = addOrSubtract;
+  }
+  return changingVariable;
+};
+
+var plusOne = function(num){
+  num += 1;
+  return num;
+};
+
+var minusOne = function(num){
+  num -= 1;
+  return num;
+};
+
 var detectObstacle = function(newCoordinate, parametersObject){
+  var coordinate;
   var currentCoordinate = [parametersObject.x, parametersObject.y];
   if(checkForObstacle(newCoordinate, parametersObject)){
-    currentCoordinate.push(parametersObject.cardinalDirection);
+    coordinate = pushCardinalDirection(currentCoordinate, parametersObject.cardinalDirection);
     console.log('Encountered obstacle at ' + newCoordinate);
-    return currentCoordinate;
   } else {
-    newCoordinate.push(parametersObject.cardinalDirection);
-    return newCoordinate;
+    coordinate = pushCardinalDirection(newCoordinate, parametersObject.cardinalDirection);
   }
+  return coordinate;
 };
 
 var checkForObstacle = function(newCoordinates, parametersObject){
   return newCoordinates.compare(parametersObject.obstacles);
 };
 
-var upcomingForwardCoordinate = function(axis){
-  return axis + 1;
-};
-
-var upcomingBackwardCoordinate = function(axis){
-  return axis - 1;
+var pushCardinalDirection = function(coordinate, cardinalDirection){
+  var newCoordinate = coordinate;
+  newCoordinate.push(cardinalDirection);
+  return newCoordinate;
 };
 
 
