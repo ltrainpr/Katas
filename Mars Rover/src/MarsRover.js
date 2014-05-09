@@ -1,22 +1,17 @@
 var X_COORDINATE=0, Y_COORDINATE=1, CARDINAL_DIRECTION=2;
 var startOfColumnOrRow = 0;
 
-Object.defineProperty(Array.prototype, 'compare', {value: compareFunction});
-function compareFunction(array){
-  if(!array){
+var deepCompareArray = function(a, b) {
+  if(!a || !b || a.length != b.length){
     return false;
   }
 
-  if(this.length != array.length){
-    return false;
-  }
-
-  for(var i = 0, l=this.length; i < l; i++) {
-    if(this[i] instanceof Array && array[i] instanceof Array){
-      if(!this[i].compare(array[i])){
+  for(var i = 0, l=a.length; i < l; i++) {
+    if(a[i] instanceof Array && b[i] instanceof Array){
+      if(!deepCompareArray(a[i], b[i])){
         return false;
       }
-    } else if (this[i] != array[i]){
+    } else if (a[i] != b[i]){
       return false;
     }
   }
@@ -223,7 +218,7 @@ var detectObstacle = function(newCoordinate, parametersObject){
 };
 
 var checkForObstacle = function(newCoordinates, parametersObject){
-  return newCoordinates.compare(parametersObject.obstacles);
+  return deepCompareArray(newCoordinates, parametersObject.obstacles);
 };
 
 var pushCardinalDirection = function(coordinate, cardinalDirection){
