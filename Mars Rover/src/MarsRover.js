@@ -128,8 +128,23 @@ var marsRover = {
      coordinates[CARDINAL_DIRECTION] + ') command(s) ' + command);
     for(var i=0; i < command.length; i++){
       var translationFn = translations[parameters.commands[i]];
+      // Instead of immediately assigning, you could check to see if any of the
+      // rules are broken (i.e. is there an obstacle? have I fallen off the
+      // world?) here
+      //
+      // This would allow you to lean up all the north/east/forward/backwards
+      // stuff because they wouldn't have to care at all about obstacles or
+      // boundaries.
+
       nextCoordinates = translationValidation(translationFn, parameters.commands, newParameters);
-      newParameters = {x: nextCoordinates[0], y: nextCoordinates[1], cardinalDirection: nextCoordinates[2], commands: parameters.commands, gridDimensions: parameters.gridDimensions, obstacles: parameters.obstacles};
+      newParameters = {
+        x: nextCoordinates[0],
+        y: nextCoordinates[1],
+        cardinalDirection: nextCoordinates[2],
+        commands: parameters.commands,
+        gridDimensions: parameters.gridDimensions, 
+        obstacles: parameters.obstacles
+      };
     }
     console.log('Stopped at (' + nextCoordinates[0], nextCoordinates[1], nextCoordinates[2] + ')');
     return nextCoordinates;
