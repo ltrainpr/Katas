@@ -4,56 +4,56 @@ describe("MarsRover Kata Tests", function() {
     return marsRover.move(startingCoordinates, command, grid, obstacle);
   };
   beforeEach(function(){
-		obstacle = [];
-		grid = [30, 30];
-		startingPosition = [0, 0, 'N'];
-	});
+    obstacle = [];
+    grid = [30, 30];
+    startingPosition = [0, 0, 'N'];
+  });
 
   it("moves rover facing north one coordinate forward", function(){
-		command = ['f'];
+    command = ['f'];
 
-		expect(move(startingPosition, command, grid, obstacle)).toEqual([0,1,'N']);
+    expect(move(startingPosition, command, grid, obstacle)).toEqual([0,1,'N']);
   });
 
   it("moves rover facing north to face East", function(){
-		command = ['r'];
+    command = ['r'];
 
-		expect(move(startingPosition, command, grid, obstacle)).toEqual([0,0,'E']);
+    expect(move(startingPosition, command, grid, obstacle)).toEqual([0,0,'E']);
   });
 
   it("moves rover facing north to face East and goes forward", function(){
-		command = ['r', 'f'];
+    command = ['r', 'f'];
 
-		expect(move(startingPosition, command, grid, obstacle)).toEqual([1,0,'E']);
+    expect(move(startingPosition, command, grid, obstacle)).toEqual([1,0,'E']);
   });
 
   it("turns rover right twice and moves forward twice and backwards once", function(){
-		startingPosition = [5, 6, 'E'];
-		command = ['r', 'r', 'f', 'f', 'b'];
+    startingPosition = [5, 6, 'E'];
+    command = ['r', 'r', 'f', 'f', 'b'];
 
-		expect(move(startingPosition, command, grid, obstacle)).toEqual([4,6,'W']);
+    expect(move(startingPosition, command, grid, obstacle)).toEqual([4,6,'W']);
   });
 
   it("wrapping of X axis grid", function(){
-		startingPosition = [29, 0, 'E'];
-		command = ['f'];
+    startingPosition = [29, 0, 'E'];
+    command = ['f'];
 
-		expect(move(startingPosition, command, grid, obstacle)).toEqual([0, 0, 'E']);
+    expect(move(startingPosition, command, grid, obstacle)).toEqual([0, 0, 'E']);
   });
 
   it("wrapping of Y axis grid", function(){
-		startingPosition = [5, 29, 'N'];
-		command = ['f'];
+    startingPosition = [5, 29, 'N'];
+    command = ['f'];
 
-		expect(move(startingPosition, command, grid, obstacle)).toEqual([5, 0, 'N']);
+    expect(move(startingPosition, command, grid, obstacle)).toEqual([5, 0, 'N']);
   });
 
   it("rover encounters obstacle and moves up to the last possible point", function(){
-		startingPosition = [10, 10, 'E'];
-		command = ['f', 'f', 'f', 'l', 'f', 'f', 'f'];
-		obstacle = [13, 12];
+    startingPosition = [10, 10, 'E'];
+    command = ['f', 'f', 'f', 'l', 'f', 'f', 'f'];
+    obstacle = [13, 12];
 
-		expect(move(startingPosition, command, grid, obstacle)).toEqual([13, 11, 'N']);
+    expect(move(startingPosition, command, grid, obstacle)).toEqual([13, 11, 'N']);
   });
 
   it("rover encounters obstacle and moves up to the last possible point", function(){
@@ -65,10 +65,10 @@ describe("MarsRover Kata Tests", function() {
   });
 
   it("rover detects obstacle when moving backwards", function(){
-		startingPosition = [4, 4, 'S'];
-		command = ['l', 'b'];
-		obstacle = [3, 4];
+    startingPosition = [4, 4, 'S'];
+    command = ['l', 'b'];
+    obstacle = [3, 4];
 
-		expect(move(startingPosition, command, grid, obstacle)).toEqual([4, 4, 'E']);
+    expect(move(startingPosition, command, grid, obstacle)).toEqual([4, 4, 'E']);
   });
 });

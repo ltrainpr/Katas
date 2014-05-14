@@ -1,22 +1,17 @@
 var X_COORDINATE=0, Y_COORDINATE=1, CARDINAL_DIRECTION=2;
 var startOfColumnOrRow = 0;
 
-Object.defineProperty(Array.prototype, 'compare', {value: compareFunction});
-function compareFunction(array){
-  if(!array){
+var deepCompareArray = function(a, b) {
+  if(!a || !b || a.length != b.length){
     return false;
   }
 
-  if(this.length != array.length){
-    return false;
-  }
-
-  for(var i = 0, l=this.length; i < l; i++) {
-    if(this[i] instanceof Array && array[i] instanceof Array){
-      if(!this[i].compare(array[i])){
+  for(var i = 0, l=a.length; i < l; i++) {
+    if(a[i] instanceof Array && b[i] instanceof Array){
+      if(!deepCompareArray(a[i], b[i])){
         return false;
       }
-    } else if (this[i] != array[i]){
+    } else if (a[i] != b[i]){
       return false;
     }
   }
@@ -133,8 +128,23 @@ var marsRover = {
      coordinates[CARDINAL_DIRECTION] + ') command(s) ' + command);
     for(var i=0; i < command.length; i++){
       var translationFn = translations[parameters.commands[i]];
+      // Instead of immediately assigning, you could check to see if any of the
+      // rules are broken (i.e. is there an obstacle? have I fallen off the
+      // world?) here
+      //
+      // This would allow you to lean up all the north/east/forward/backwards
+      // stuff because they wouldn't have to care at all about obstacles or
+      // boundaries.
+
       nextCoordinates = translationValidation(translationFn, parameters.commands, newParameters);
-      newParameters = {x: nextCoordinates[0], y: nextCoordinates[1], cardinalDirection: nextCoordinates[2], commands: parameters.commands, gridDimensions: parameters.gridDimensions, obstacles: parameters.obstacles};
+      newParameters = {
+        x: nextCoordinates[0],
+        y: nextCoordinates[1],
+        cardinalDirection: nextCoordinates[2],
+        commands: parameters.commands,
+        gridDimensions: parameters.gridDimensions, 
+        obstacles: parameters.obstacles
+      };
     }
     console.log('Stopped at (' + nextCoordinates[0], nextCoordinates[1], nextCoordinates[2] + ')');
     return nextCoordinates;
@@ -223,7 +233,7 @@ var detectObstacle = function(newCoordinate, parametersObject){
 };
 
 var checkForObstacle = function(newCoordinates, parametersObject){
-  return newCoordinates.compare(parametersObject.obstacles);
+  return deepCompareArray(newCoordinates, parametersObject.obstacles);
 };
 
 var pushCardinalDirection = function(coordinate, cardinalDirection){
