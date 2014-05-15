@@ -71,4 +71,11 @@ describe("MarsRover Kata Tests", function() {
 
     expect(move(startingPosition, command, grid, obstacle)).toEqual([4, 4, 'E']);
   });
+
+  it("unrecognized command", function(){
+    command = ['l', 'b', 'j'];
+    obstacle = [3, 4];
+
+    expect(move(startingPosition, command, grid, obstacle)).toBeUndefined();
+  });
 });
