@@ -16,7 +16,7 @@ var deepCompareArray = function(a, b) {
     }
   }
   return true;
-}
+};
 
 var rightFrom = function (currentDirection) {
   switch(currentDirection.toUpperCase()){
@@ -49,165 +49,143 @@ var leftFrom = function (currentDirection) {
 };
 
 var translations = {
-  "l": function(parametersObject){
-    var left = leftFrom(parametersObject.cardinalDirection);
-    console.log('Turning left to (' + parametersObject.x, parametersObject.y, left + ')');
-    return [parametersObject.x, parametersObject.y, left];
+  "l": function(coordinates){
+    var left = leftFrom(coordinates[CARDINAL_DIRECTION]);
+    console.log('Turning left to (' + coordinates[X_COORDINATE], coordinates[Y_COORDINATE], left + ')');
+    return [coordinates[X_COORDINATE], coordinates[Y_COORDINATE], left];
   },
 
-  "r": function(parametersObject){
-    var right = rightFrom(parametersObject.cardinalDirection);
-    console.log('Turning right to (' + parametersObject.x, parametersObject.y, right + ')');
-    return [parametersObject.x, parametersObject.y, right];
+  "r": function(coordinates){
+    var right = rightFrom(coordinates[CARDINAL_DIRECTION]);
+    console.log('Turning right to (' + coordinates[X_COORDINATE], coordinates[Y_COORDINATE], right + ')');
+    return [coordinates[X_COORDINATE], coordinates[Y_COORDINATE], right];
   },
 
-  "f": function(parametersObject){
-    var newCoordinates = forward[parametersObject.cardinalDirection](parametersObject);
+  "f": function(coordinates, gridDimensions){
+    var newCoordinates = forward[coordinates[CARDINAL_DIRECTION]](coordinates, gridDimensions);
     console.log('Moving forward to (' + newCoordinates[X_COORDINATE], newCoordinates[Y_COORDINATE], newCoordinates[CARDINAL_DIRECTION] + ')');
     return newCoordinates;
   },
 
-  "b": function (parametersObject) {
-    var newCoordinates = backward[parametersObject.cardinalDirection](parametersObject);
+  "b": function (coordinates, gridDimensions) {
+    var newCoordinates = backward[coordinates[CARDINAL_DIRECTION]](coordinates, gridDimensions);
     console.log('Moving backward to (' + newCoordinates[X_COORDINATE], newCoordinates[Y_COORDINATE], newCoordinates[CARDINAL_DIRECTION] + ')');
     return newCoordinates;
   }
 };
 
 var forward = {
-  N: function (parametersObject) {
-    return northForward(parametersObject);
+  N: function (coordinates, gridDimensions) {
+    return northForward(coordinates, gridDimensions);
   },
 
-  E: function (parametersObject) {
-    return eastForward(parametersObject);
+  E: function (coordinates, gridDimensions) {
+    return eastForward(coordinates, gridDimensions);
   },
 
-  S: function (parametersObject) {
-    return northBackward(parametersObject);
+  S: function (coordinates, gridDimensions) {
+    return northBackward(coordinates, gridDimensions);
   },
 
-  W: function (parametersObject) {
-    return eastBackward(parametersObject);
+  W: function (coordinates, gridDimensions) {
+    return eastBackward(coordinates, gridDimensions);
   }
 };
 
 var backward = {
-  N: function (parametersObject) {
-    return northBackward(parametersObject);
+  N: function (coordinates, gridDimensions) {
+    return northBackward(coordinates, gridDimensions);
   },
 
-  E: function (parametersObject) {
-    return eastBackward(parametersObject);
+  E: function (coordinates, gridDimensions) {
+    return eastBackward(coordinates, gridDimensions);
   },
 
-  S: function (parametersObject) {
-    return northForward(parametersObject);
+  S: function (coordinates, gridDimensions) {
+    return northForward(coordinates, gridDimensions);
   },
 
-  W: function (parametersObject) {
-    return eastForward(parametersObject);
+  W: function (coordinates, gridDimensions) {
+    return eastForward(coordinates, gridDimensions);
   }
 };
 
 var marsRover = {
   move: function (coordinates, command, grid, obstacle) {
     var newCoordinates, nextCoordinates;
-    var coordinatesCopy = coordinates;
-    var parameters = {
-      x: coordinatesCopy[X_COORDINATE],
-      y: coordinatesCopy[Y_COORDINATE],
-      cardinalDirection: coordinatesCopy[CARDINAL_DIRECTION],
-      commands: command,
-      gridDimensions: grid,
-      obstacles: obstacle
-    };
-    var newParameters = (newParameters || parameters);
+    var coordinatesCopy = coordinates.slice();
+    var commands = command;
+    var gridDimensions = grid;
+    var obstacles = obstacle;
 
     console.log('Starting Coordinates (' + coordinates[X_COORDINATE] + ',' + coordinates[Y_COORDINATE] + ',' +
      coordinates[CARDINAL_DIRECTION] + ') command(s) ' + command);
     for(var i=0; i < command.length; i++){
-      var translationFn = translations[parameters.commands[i]];
-      // Instead of immediately assigning, you could check to see if any of the
-      // rules are broken (i.e. is there an obstacle? have I fallen off the
-      // world?) here
-      //
-      // This would allow you to lean up all the north/east/forward/backwards
-      // stuff because they wouldn't have to care at all about obstacles or
-      // boundaries.
+      var translationFn = translations[commands[i]];
+      newCoordinates = newCoordinates || coordinatesCopy;
+      if (!translationFn){
+        alert('Unrecognized command ' + command);
+        return translationFn;
+      }
 
-      nextCoordinates = translationValidation(translationFn, parameters.commands, newParameters);
-      newParameters = {
-        x: nextCoordinates[0],
-        y: nextCoordinates[1],
-        cardinalDirection: nextCoordinates[2],
-        commands: parameters.commands,
-        gridDimensions: parameters.gridDimensions, 
-        obstacles: parameters.obstacles
-      };
+      nextCoordinates = translationFn(newCoordinates, gridDimensions);
+
+      if(detectObstacle(nextCoordinates, obstacles)){
+        console.log('Encountered obstacle at ' + newCoordinates);
+        return newCoordinates;
+      }
+
+      newCoordinates = edgeOfWorld(nextCoordinates, newCoordinates, gridDimensions);
+
+      newCoordinates = translationFn(newCoordinates, gridDimensions);
     }
-    console.log('Stopped at (' + nextCoordinates[0], nextCoordinates[1], nextCoordinates[2] + ')');
-    return nextCoordinates;
+    console.log('Stopped at (' + newCoordinates[0], newCoordinates[1], newCoordinates[2] + ')');
+    return newCoordinates;
   },
 };
 
-var translationValidation = function(translationFn, command, newParameters){
-  if (translationFn){
-    return translationFn(newParameters);
-  }else{
-    alert('Unrecognized command ' + command[i]);
+var edgeOfWorld = function(nextCoordinates, newCoordinates, gridDimensions){
+  var coordinates = newCoordinates.slice();
+  if(nextCoordinates[X_COORDINATE] === gridDimensions[X_COORDINATE]){
+    coordinates[X_COORDINATE] = - 1;
+  } else if (nextCoordinates[Y_COORDINATE] === gridDimensions[Y_COORDINATE]){
+    coordinates[Y_COORDINATE] = - 1;
+  } else if (nextCoordinates[X_COORDINATE] < 0){
+    coordinates[X_COORDINATE] = gridDimensions[X_COORDINATE];
+  } else if (nextCoordinates[Y_COORDINATE] < 0){
+    coordinates[Y_COORDINATE] = gridDimensions[Y_COORDINATE];
   }
+  return coordinates;
 };
 
-var northForward = function(parametersObject) {
-  var newY = parametersObject.y;
-  var compareLeft = plusOne(newY);
-  var compareRight = parametersObject.gridDimensions[Y_COORDINATE];
-  var addOrSubtract = plusOne(newY);
-
-  var newCoordinate = [parametersObject.x, consolidate(newY, compareLeft, compareRight, startOfColumnOrRow, addOrSubtract)];
-  return detectObstacle(newCoordinate, parametersObject);
+var detectObstacle = function(newCoordinates, obstacle){
+  return ((newCoordinates[X_COORDINATE] === obstacle[X_COORDINATE]) && (newCoordinates[Y_COORDINATE] === obstacle[Y_COORDINATE]));
 };
 
-var northBackward = function (parametersObject) {
-  var newY = parametersObject.y;
-  var compareLeft = minusOne(newY);
-  var ifTrueSetToThis = minusOne(parametersObject.gridDimensions[Y_COORDINATE]);
-  var addOrSubtract = minusOne(newY);
 
-  var newCoordinate = [parametersObject.x, consolidate(newY, compareLeft, startOfColumnOrRow, ifTrueSetToThis, addOrSubtract)];
-  return detectObstacle(newCoordinate, parametersObject);
+var northForward = function(coordinates, gridDimensions) {
+  var newY = coordinates[Y_COORDINATE];
+  var newCoordinate = [coordinates[X_COORDINATE], plusOne(newY), coordinates[CARDINAL_DIRECTION]];
+  return newCoordinate;
 };
 
-var eastForward = function (parametersObject) {
-  var x = parametersObject.x;
-  var compareLeft = plusOne(x);
-  var compareRight = parametersObject.gridDimensions[X_COORDINATE];
-  var ifTrueSetToThis = minusOne(parametersObject.gridDimensions[Y_COORDINATE]);
-  var addOrSubtract = plusOne(x);
 
-  var newCoordinate = [consolidate(x, compareLeft, compareRight, startOfColumnOrRow, addOrSubtract), parametersObject.y];
-  return detectObstacle(newCoordinate, parametersObject);
+var northBackward = function (coordinates, gridDimensions) {
+  var newY = coordinates[Y_COORDINATE];
+  var newCoordinate = [coordinates[X_COORDINATE], minusOne(newY), coordinates[CARDINAL_DIRECTION]];
+  return newCoordinate;
 };
 
-var eastBackward = function(parametersObject) {
-  var x = parametersObject.x;
-  var compareLeft = minusOne(x);
-  var ifTrueSetToThis = parametersObject.gridDimensions[X_COORDINATE] - 1;
-  var addOrSubtract = minusOne(x);
-
-  var newCoordinate = [consolidate(x, compareLeft, startOfColumnOrRow, ifTrueSetToThis, addOrSubtract), parametersObject.y];
-  return detectObstacle(newCoordinate, parametersObject);
+var eastForward = function (coordinates, gridDimensions) {
+  var x = coordinates[X_COORDINATE];
+  var newCoordinate = [plusOne(x), coordinates[Y_COORDINATE], coordinates[CARDINAL_DIRECTION]];
+  return newCoordinate;
 };
 
-var consolidate = function(changingVar, compareLeft, compareRight, ifTrueSetToThis, addOrSubtract){
-  var changingVariable = changingVar;
-  if(compareLeft === compareRight){
-    changingVariable = ifTrueSetToThis;
-  } else {
-    changingVariable = addOrSubtract;
-  }
-  return changingVariable;
+var eastBackward = function(coordinates, gridDimensions) {
+  var x = coordinates[X_COORDINATE];
+  var newCoordinate = [minusOne(x), coordinates[Y_COORDINATE], coordinates[CARDINAL_DIRECTION]];
+  return newCoordinate;
 };
 
 var plusOne = function(num){
@@ -218,28 +196,6 @@ var plusOne = function(num){
 var minusOne = function(num){
   num -= 1;
   return num;
-};
-
-var detectObstacle = function(newCoordinate, parametersObject){
-  var coordinate;
-  var currentCoordinate = [parametersObject.x, parametersObject.y];
-  if(checkForObstacle(newCoordinate, parametersObject)){
-    coordinate = pushCardinalDirection(currentCoordinate, parametersObject.cardinalDirection);
-    console.log('Encountered obstacle at ' + newCoordinate);
-  } else {
-    coordinate = pushCardinalDirection(newCoordinate, parametersObject.cardinalDirection);
-  }
-  return coordinate;
-};
-
-var checkForObstacle = function(newCoordinates, parametersObject){
-  return deepCompareArray(newCoordinates, parametersObject.obstacles);
-};
-
-var pushCardinalDirection = function(coordinate, cardinalDirection){
-  var newCoordinate = coordinate;
-  newCoordinate.push(cardinalDirection);
-  return newCoordinate;
 };
 
 
