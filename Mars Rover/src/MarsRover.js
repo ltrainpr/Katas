@@ -132,7 +132,7 @@ var marsRover = {
 
       if(detectObstacle(nextCoordinates, obstacles)){
         console.log('Encountered obstacle at ' + newCoordinates);
-        return newCoordinates;
+        break;
       }
 
       newCoordinates = edgeOfWorld(nextCoordinates, newCoordinates, gridDimensions);
