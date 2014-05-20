@@ -35,11 +35,16 @@ class TestStringCalculator < MiniTest::Test
       @string_calculator.add("2,-5,7,-3")
     end
   end
+
+  def test_bigger_than_one_thousand
+    assert_equal 4, @string_calculator.add("1000,4,10008")
+  end
 end
 
 class StringCalculator
   def add(string_number)
     string = string_number.dup
+    extract_bigger_than_one_thousand(string)
     check_for_negatives(string)
     custom_delimeter(string)
     array = split_string(string)
@@ -66,6 +71,11 @@ class StringCalculator
   def check_for_negatives(string)
     negatives = string.scan(/-\d/)
     raise "negatives not allowed #{negatives.join(',')}" if !negatives.empty?
+  end
+
+  def extract_bigger_than_one_thousand(string)
+    string.gsub!(/\d\d\d\d*/, '')
+    p string
   end
 end
 
