@@ -6,12 +6,6 @@
   var globalScope = this;
   globalScope.Rover = Rover;
 
-  var rotations = {
-    north: { left: 'west', right: 'east' },
-    west: { left: 'south', right: 'north' },
-    south: { left: 'east', right: 'west' },
-    east: { left: 'north', right: 'south'}
-  };
 
   function rotateFacing (facing, rotationDirection) {
     return rotations[facing][rotationDirection];
@@ -33,31 +27,49 @@
 
   var commandFunctions = {
     B: function moveBackward (position) {
-      return { x: position.x, y: position.y - 1, facing: position.facing };
+        var args = backwardMovements[position.facing];
+        return move(position, args.axis, args.qty);
     },
     F: function moveForward (position) {
-       var args = movements[position.facing];
-       return move(position, args.axis, args.qty);
+        var args = forwardMovements[position.facing];
+        return move(position, args.axis, args.qty);
     },
     L: function rotateLeft (position) {
-      return rotate(position, "left");
+        return rotate(position, "left");
     },
     R: function rotateRight (position) {
-      return rotate(position, "right");
+        return rotate(position, "right");
     }
   };
 
-  var movements = {
+  var forwardMovements = {
       east: { axis: "x", qty: 1},
       west: { axis: "x", qty: -1},
       north:{ axis: "y", qty: 1},
       south:{ axis: "y", qty: -1}
   };
 
+  var backwardMovements = {
+      east: { axis: "x", qty: -1},
+      west: { axis: "x", qty: 1},
+      north:{ axis: "y", qty: -1},
+      south:{ axis: "y", qty: 1}
+  };
+
+  var rotations = {
+    north: { left: 'west', right: 'east' },
+    west: { left: 'south', right: 'north' },
+    south: { left: 'east', right: 'west' },
+    east: { left: 'north', right: 'south'}
+  };
 
   Rover.prototype.sendCommands = function (commands){
-    this.attributes.position = commandFunctions[commands](this.attributes.position);
+    var self = this;
+    commands.map(function(command){
+      self.attributes.position = commandFunctions[command](self.attributes.position);
+    });
   };
+
 
   Rover.prototype.location = function () {
     return { x: this.attributes.position.x,
